@@ -1,25 +1,41 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Search, User, LogOut, PlayCircle } from 'lucide-react';
+import { Search, LogOut, PlayCircle } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
+import { useState, useEffect, useRef } from 'react';
 
 const Navbar = () => {
   const navigate = useNavigate();
-  const user = JSON.parse(localStorage.getItem('user') || 'null');
+  const { user, logout } = useAuth();
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const dropdownRef = useRef(null);
 
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+        setDropdownOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  // Logout function
   const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    navigate('/login');
+    logout();
+    navigate("/login");
   };
 
   return (
     <nav className="navbar glass">
       <div className="nav-container">
+
+        {/* LEFT */}
         <div className="nav-left">
           <Link to="/" className="logo">
             <motion.div whileHover={{ scale: 1.05 }} className="logo-box">
-              <PlayCircle color="var(--primary)" size={32} />
-              <span>MOVIE<span>WEB</span></span>
+              <span>M<PlayCircle color="var(--primary)" size={20} />VIEW</span>
             </motion.div>
           </Link>
 
@@ -30,18 +46,50 @@ const Navbar = () => {
           </div>
         </div>
 
+        {/* RIGHT */}
         <div className="nav-right">
+
+          {/* SEARCH */}
           <div className="search-bar glass">
-            <Search size={18} color="var(--muted)" />
+            <Search size={20} color="var(--muted)" />
             <input type="text" placeholder="Search movies..." />
+            <button className="search-btn">
+              <Search size={20} color="black" />
+            </button>
           </div>
-          
+
+          {/* USER SECTION */}
           {user ? (
-            <div className="user-profile">
-              <span className="user-name">{user.name || user.email.split('@')[0]}</span>
-              <button onClick={handleLogout} className="logout-btn glass">
-                <LogOut size={18} />
-              </button>
+            <div className="user-profile" ref={dropdownRef}>
+              {/* 👤 ACCOUNT ICON - Click to toggle dropdown */}
+              <img
+                src="https://cdn-icons-png.flaticon.com/512/149/149071.png"
+                alt="profile"
+                onClick={() => setDropdownOpen(!dropdownOpen)}
+                style={{
+                  width: "35px",
+                  borderRadius: "50%",
+                  cursor: "pointer"
+                }}
+              />
+
+              {/* USER NAME */}
+              <span className="user-name">
+                {user.name || user.email.split('@')[0]}
+              </span>
+
+              {/* DROPDOWN MENU */}
+              {dropdownOpen && (
+                <div className="dropdown-menu">
+                  <p className="dropdown-user">
+                    {user.name || user.email}
+                  </p>
+                  <button onClick={handleLogout} className="dropdown-logout">
+                    <LogOut size={16} />
+                    Logout
+                  </button>
+                </div>
+              )}
             </div>
           ) : (
             <Link to="/login" className="login-link btn-primary">
@@ -51,6 +99,7 @@ const Navbar = () => {
         </div>
       </div>
 
+      {/* STYLES */}
       <style jsx>{`
         .navbar {
           position: fixed;
@@ -82,10 +131,6 @@ const Navbar = () => {
           gap: 10px;
           font-size: 24px;
           font-weight: 700;
-          letter-spacing: -0.5px;
-        }
-        .logo span span {
-          color: var(--primary);
         }
         .nav-links {
           display: flex;
@@ -94,11 +139,6 @@ const Navbar = () => {
         .nav-links a {
           color: var(--muted);
           font-weight: 500;
-          transition: 0.3s;
-          font-size: 15px;
-        }
-        .nav-links a:hover, .nav-links a[data-active="true"] {
-          color: var(--foreground);
         }
         .nav-right {
           display: flex;
@@ -119,9 +159,9 @@ const Navbar = () => {
           color: white;
           width: 100%;
           outline: none;
-          font-size: 14px;
         }
         .user-profile {
+          position: relative;
           display: flex;
           align-items: center;
           gap: 12px;
@@ -129,32 +169,49 @@ const Navbar = () => {
         .user-name {
           font-size: 14px;
           font-weight: 600;
+        }
+        .dropdown-menu {
+          position: absolute;
+          top: 50px;
+          right: 0;
+          background: var(--card);
+          backdrop-filter: blur(14px);
+          -webkit-backdrop-filter: blur(14px);
+          border: 1px solid var(--glass-border);
+          border-radius: 12px;
+          padding: 12px;
+          width: 180px;
+          box-shadow: var(--shadow);
+          z-index: 1001;
+        }
+        .dropdown-user {
+          margin-bottom: 12px;
+          font-size: 14px;
+          font-weight: 600;
           color: var(--foreground);
         }
-        .logout-btn {
-          width: 36px;
-          height: 36px;
+        .dropdown-logout {
+          width: 100%;
+          padding: 8px 12px;
+          border: none;
+          background: var(--primary);
+          color: white;
+          border-radius: 8px;
+          cursor: pointer;
           display: flex;
           align-items: center;
           justify-content: center;
-          border-radius: 50%;
-          transition: 0.3s;
+          gap: 8px;
+          font-size: 14px;
+          font-weight: 500;
         }
-        .logout-btn:hover {
-          background: rgba(229, 9, 20, 0.1);
-          color: var(--primary);
+        .dropdown-logout:hover {
+          background: var(--primary-hover);
         }
         .login-link {
           padding: 10px 24px;
-          font-size: 14px;
-          font-weight: 600;
           border-radius: 99px;
           color: white;
-        }
-        .logo-box {
-          display: flex;
-          align-items: center;
-          gap: 10px;
         }
       `}</style>
     </nav>

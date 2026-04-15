@@ -21,7 +21,7 @@ export default function Register() {
       await registerUser({ name, email, password });
       navigate("/login");
     } catch (err: any) {
-      setError(err.response?.data?.message || "Registration failed. Try a different email.");
+      setError(err.response?.data?.error || "Registration failed. Try a different email.");
     } finally {
       setLoading(false);
     }
@@ -94,7 +94,7 @@ export default function Register() {
         </motion.div>
       </div>
 
-      <style jsx>{`
+      <style>{`
         .auth-page {
           min-height: 100vh;
           display: flex;

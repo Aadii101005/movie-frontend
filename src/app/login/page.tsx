@@ -4,6 +4,7 @@ import { loginUser } from "../../services/authApi";
 import { motion } from "framer-motion";
 import { Mail, Lock, LogIn, ArrowRight } from "lucide-react";
 import Navbar from "../../components/Navbar";
+import { useAuth } from "../../context/AuthContext";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -11,6 +12,7 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -18,11 +20,15 @@ export default function Login() {
     setError("");
     try {
       const res = await loginUser({ email, password });
-      localStorage.setItem("token", res.data.token);
-      localStorage.setItem("user", JSON.stringify(res.data.user));
+      const { token, user } = res.data;
+      if (!user) {
+        throw new Error("Login did not return user data.");
+      }
+      localStorage.setItem("token", token);
+      login(user);
       navigate("/");
     } catch (err: any) {
-      setError(err.response?.data?.message || "Login failed. Please check your credentials.");
+      setError(err.response?.data?.error || err.message || "Login failed. Please check your credentials.");
     } finally {
       setLoading(false);
     }
@@ -39,7 +45,7 @@ export default function Login() {
         >
           <div className="auth-header">
             <h2>Welcome Back</h2>
-            <p>Access your curated movie collection</p>
+           {/* <p>Access your curated movie collection</p> */}
           </div>
 
           <form onSubmit={handleLogin} className="auth-form">
@@ -77,12 +83,12 @@ export default function Login() {
           </form>
 
           <p className="auth-footer">
-            Don't have an account? <Link to="/register">Create one for free <ArrowRight size={14} /></Link>
+            Don't have an account? <Link to="/register"> Create Account<ArrowRight size={14} /></Link>
           </p>
         </motion.div>
       </div>
 
-      <style jsx>{`
+      <style>{`
         .auth-page {
           min-height: 100vh;
           display: flex;

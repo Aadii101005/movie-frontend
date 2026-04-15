@@ -4,16 +4,24 @@ import MovieCard from '../components/MovieCard';
 import Loader from '../components/Loader';
 import { useFetch } from '../hooks/useFetch';
 import { Play, Info, ChevronRight } from 'lucide-react';
+import heroImage from './images/image.png';
 
 const HomePage = () => {
   const { data: movies, loading } = useFetch('/movies/dummy');
+  const spotlight = movies?.[0];
+  const backgroundImage = heroImage;
 
   return (
     <div className="home-page hero-gradient">
       <Navbar />
       
       {/* Hero Section */}
-      <section className="hero">
+      <section
+        className="hero"
+        style={{
+          backgroundImage: `linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), url(${backgroundImage})`,
+        }}
+      >
         <div className="hero-content">
           <motion.h1 
             initial={{ opacity: 0, x: -50 }}
@@ -28,7 +36,7 @@ const HomePage = () => {
             transition={{ delay: 0.1 }}
             className="hero-subtitle"
           >
-            {/* Dive into thousands of movies, series, and awards-winning originals. 
+            {/* Dive into thousands of movies, series, and awards-winning originals.
             All in one place, starting at just $9.99/mo. */}
           </motion.p>
           <motion.div 
@@ -43,7 +51,7 @@ const HomePage = () => {
             </button>
             <button className="secondary-btn glass">
               <Info size={20} />
-              Learn More
+              {/* Learn More */}
             </button>
           </motion.div>
         </div>
@@ -73,15 +81,30 @@ const HomePage = () => {
           padding-top: 80px;
         }
         .hero {
-          height: 80vh;
+          min-height: 80vh;
           display: flex;
           align-items: center;
           padding: 0 5%;
           position: relative;
+          background-size: cover;
+          background-position: center;
+          background-repeat: no-repeat;
+        }
+        .hero::before {
+          content: "";
+          position: absolute;
+          inset: 0;
+          background: rgba(0, 0, 0, 0.15);
+          z-index: 0;
+        }
+        .hero-content {
+          position: relative;
+          z-index: 1;
+          max-width: 620px;
         }
         .hero-title {
-          font-size: 72px;
-          line-height: 1.1;
+          font-size: clamp(3rem, 5vw, 5.5rem);
+          line-height: 1.04;
           font-weight: 800;
           margin-bottom: 24px;
         }
