@@ -1,14 +1,16 @@
+import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import Navbar from '../components/Navbar';
 import MovieCard from '../components/MovieCard';
 import Loader from '../components/Loader';
 import { useFetch } from '../hooks/useFetch';
-import { Play, Info, ChevronRight } from 'lucide-react';
+import { Play, ChevronRight } from 'lucide-react';
 import heroImage from './images/image.png';
 
 const HomePage = () => {
-  const { data: movies, loading } = useFetch('/movies/dummy');
-  const spotlight = movies?.[0];
+  const { data: movies, loading: moviesLoading } = useFetch('/movies');
+  const { data: series, loading: seriesLoading } = useFetch('/series');
+
   const backgroundImage = heroImage;
 
   return (
@@ -30,46 +32,51 @@ const HomePage = () => {
           >
             Experience Cinema <br /> Like Never Before
           </motion.h1>
-          <motion.p 
-            initial={{ opacity: 0, x: -50 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.1 }}
-            className="hero-subtitle"
-          >
-            {/* Dive into thousands of movies, series, and awards-winning originals.
-            All in one place, starting at just $9.99/mo. */}
-          </motion.p>
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
             className="hero-actions"
           >
-            <button className="primary-btn">
+            <Link to="/explore" className="primary-btn">
               <Play size={20} fill="white" />
               Watch Now
-            </button>
-            <button className="secondary-btn glass">
-              <Info size={20} />
-              {/* Learn More */}
-            </button>
+            </Link>
           </motion.div>
         </div>
       </section>
 
-      {/* Movies Grid */}
+      {/* Movies Section */}
       <section className="grid-section">
         <div className="section-header">
-          <h2>Featured Movies</h2>
-          <btn className="see-more">See All <ChevronRight size={16} /></btn>
+          <h2>Trending Movies</h2>
+          <Link to="/movies" className="see-more">See All <ChevronRight size={16} /></Link>
         </div>
 
-        {loading ? (
+        {moviesLoading ? (
           <Loader />
         ) : (
           <div className="movie-grid">
-            {movies?.map((movie) => (
+            {movies?.slice(0, 5).map((movie) => (
               <MovieCard key={movie.id} movie={movie} />
+            ))}
+          </div>
+        )}
+      </section>
+
+      {/* Series Section */}
+      <section className="grid-section" style={{ paddingTop: 0 }}>
+        <div className="section-header">
+          <h2>Popular TV Series</h2>
+          <Link to="/series" className="see-more">See All <ChevronRight size={16} /></Link>
+        </div>
+
+        {seriesLoading ? (
+          <Loader />
+        ) : (
+          <div className="movie-grid">
+            {series?.slice(0, 5).map((s) => (
+              <MovieCard key={s.id} movie={s} />
             ))}
           </div>
         )}
@@ -79,6 +86,7 @@ const HomePage = () => {
         .home-page {
           min-height: 100vh;
           padding-top: 80px;
+          background: var(--background);
         }
         .hero {
           min-height: 80vh;
@@ -89,6 +97,7 @@ const HomePage = () => {
           background-size: cover;
           background-position: center;
           background-repeat: no-repeat;
+          border-bottom: 1px solid var(--glass-border);
         }
         .hero::before {
           content: "";
@@ -108,12 +117,6 @@ const HomePage = () => {
           font-weight: 800;
           margin-bottom: 24px;
         }
-        .hero-subtitle {
-          font-size: 18px;
-          color: var(--muted);
-          max-width: 600px;
-          margin-bottom: 40px;
-        }
         .hero-actions {
           display: flex;
           gap: 16px;
@@ -126,17 +129,10 @@ const HomePage = () => {
           display: flex;
           align-items: center;
           gap: 10px;
-        }
-        .secondary-btn {
-          padding: 14px 28px;
-          color: white;
-          font-weight: 600;
-          display: flex;
-          align-items: center;
-          gap: 10px;
+          border-radius: 8px;
         }
         .grid-section {
-          padding: 80px 5%;
+          padding: 60px 5%;
         }
         .section-header {
           display: flex;

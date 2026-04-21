@@ -1,4 +1,4 @@
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Search, LogOut, PlayCircle } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
@@ -6,8 +6,10 @@ import { useState, useEffect, useRef } from 'react';
 
 const Navbar = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { user, logout } = useAuth();
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
   const dropdownRef = useRef(null);
 
   // Close dropdown when clicking outside
@@ -27,6 +29,13 @@ const Navbar = () => {
     navigate("/login");
   };
 
+  const handleSearch = (e) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      navigate(`/search?q=${encodeURIComponent(searchQuery)}`);
+    }
+  };
+
   return (
     <nav className="navbar glass">
       <div className="nav-container">
@@ -40,9 +49,9 @@ const Navbar = () => {
           </Link>
 
           <div className="nav-links">
-            <Link to="/">Home</Link>
-            <Link to="/movies">Movies</Link>
-            <Link to="/series">Series</Link>
+            <Link to="/" className={location.pathname === '/' ? 'active' : ''}>Home</Link>
+            <Link to="/movies" className={location.pathname === '/movies' ? 'active' : ''}>Movies</Link>
+            <Link to="/series" className={location.pathname === '/series' ? 'active' : ''}>Series</Link>
           </div>
         </div>
 
@@ -50,13 +59,18 @@ const Navbar = () => {
         <div className="nav-right">
 
           {/* SEARCH */}
-          <div className="search-bar glass">
+          <form onSubmit={handleSearch} className="search-bar glass">
             <Search size={20} color="var(--muted)" />
-            <input type="text" placeholder="Search movies..." />
-            <button className="search-btn">
+            <input 
+              type="text" 
+              placeholder="Search movies..." 
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+            <button type="submit" className="search-btn">
               <Search size={20} color="black" />
             </button>
-          </div>
+          </form>
 
           {/* USER SECTION */}
           {user ? (
@@ -139,6 +153,27 @@ const Navbar = () => {
         .nav-links a {
           color: var(--muted);
           font-weight: 500;
+          position: relative;
+          transition: 0.3s;
+        }
+        .nav-links a:hover {
+          color: white;
+        }
+        .nav-links a.active {
+          color: white;
+        }
+        .nav-links a::after {
+          content: "";
+          position: absolute;
+          bottom: -8px;
+          left: 0;
+          width: 0;
+          height: 2px;
+          background: var(--primary);
+          transition: 0.3s;
+        }
+        .nav-links a.active::after {
+          width: 100%;
         }
         .nav-right {
           display: flex;

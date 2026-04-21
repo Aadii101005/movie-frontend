@@ -11,7 +11,7 @@ const MovieCard = ({ movie }) => {
       className="movie-card glass"
     >
       <div className="image-container">
-        <img src={movie.image || `https://image.tmdb.org/t/p/w500/${movie.poster_path}`} alt={movie.title} />
+        <img src={movie.poster || `https://image.tmdb.org/t/p/w500/${movie.poster_path}`} alt={movie.title} />
         <div className="overlay">
           <motion.button 
             whileHover={{ scale: 1.1 }}
@@ -27,7 +27,7 @@ const MovieCard = ({ movie }) => {
           <span className="year">{movie.year || movie.release_date?.split('-')[0]}</span>
           <div className="rating">
             <Star color="#fbbf24" fill="#fbbf24" size={14} />
-            <span>{movie.rating || movie.vote_average?.toFixed(1) || 'N/A'}</span>
+            <span>{movie.rating?.toFixed(1) || 'N/A'}</span>
           </div>
         </div>
         <h3 className="title">{movie.title}</h3>
