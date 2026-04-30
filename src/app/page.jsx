@@ -8,8 +8,8 @@ import { Play, ChevronRight } from 'lucide-react';
 import heroImage from './images/image.png';
 
 const HomePage = () => {
-  const { data: movies, loading: moviesLoading } = useFetch('/movies');
-  const { data: series, loading: seriesLoading } = useFetch('/series');
+  const { data: movies, loading: moviesLoading } = useFetch('/protected/movies');
+  const { data: series, loading: seriesLoading } = useFetch('/protected/series');
 
   const backgroundImage = heroImage;
 

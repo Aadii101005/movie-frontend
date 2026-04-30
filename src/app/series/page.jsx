@@ -6,7 +6,7 @@ import { useFetch } from '../../hooks/useFetch';
 import heroImage from '../images/image.png';
 
 const SeriesPage = () => {
-  const { data: series, loading } = useFetch('/series');
+  const { data: series, loading } = useFetch('/protected/series');
 
   return (
     <div className="series-page hero-gradient">

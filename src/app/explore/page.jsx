@@ -6,8 +6,8 @@ import { useFetch } from '../../hooks/useFetch';
 import heroImage from '../images/image.png';
 
 const ExplorePage = () => {
-    const { data: movies, loading: moviesLoading } = useFetch('/movies');
-    const { data: series, loading: seriesLoading } = useFetch('/series');
+    const { data: movies, loading: moviesLoading } = useFetch('/protected/movies');
+    const { data: series, loading: seriesLoading } = useFetch('/protected/series');
 
     const loading = moviesLoading || seriesLoading;
     const allContent = [

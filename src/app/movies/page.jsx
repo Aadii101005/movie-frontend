@@ -7,7 +7,7 @@ import { useFetch } from '../../hooks/useFetch';
 import heroImage from '../images/image.png';
 
 const MoviesPage = () => {
-  const { data: movies, loading } = useFetch('/movies');
+  const { data: movies, loading } = useFetch('/protected/movies');
 
   return (
     <div className="movies-page hero-gradient">
