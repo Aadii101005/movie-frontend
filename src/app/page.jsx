@@ -16,7 +16,7 @@ const HomePage = () => {
   return (
     <div className="home-page hero-gradient">
       <Navbar />
-      
+
       {/* Hero Section */}
       <section
         className="hero"
@@ -25,14 +25,14 @@ const HomePage = () => {
         }}
       >
         <div className="hero-content">
-          <motion.h1 
+          <motion.h1
             initial={{ opacity: 0, x: -50 }}
             animate={{ opacity: 1, x: 0 }}
             className="hero-title"
           >
             Experience Cinema <br /> Like Never Before
           </motion.h1>
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
@@ -76,7 +76,7 @@ const HomePage = () => {
         ) : (
           <div className="movie-grid">
             {series?.slice(0, 5).map((s) => (
-              <MovieCard key={s.id} movie={s} />
+              <MovieCard key={s.id} movie={s} type="series" />
             ))}
           </div>
         )}
@@ -154,7 +154,8 @@ const HomePage = () => {
         }
         .movie-grid {
           display: grid;
-          grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+          grid-template-columns: repeat(auto-fill, 240px);
+          justify-content: center;
           gap: 30px;
         }
       `}</style>

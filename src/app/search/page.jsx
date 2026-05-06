@@ -16,8 +16,8 @@ const SearchPage = () => {
     return (
         <div className="search-page hero-gradient">
             <Navbar />
-            
-            <section 
+
+            <section
                 className="page-hero"
                 style={{
                     backgroundImage: `linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.8)), url(${heroImage})`,
@@ -44,7 +44,7 @@ const SearchPage = () => {
                 ) : (
                     <div className="movie-grid">
                         {allResults.map((item) => (
-                            <MovieCard key={`${item.type}-${item.id}`} movie={item} />
+                            <MovieCard key={`${item.type}-${item.id}`} movie={item} type={item.type || 'movie'} />
                         ))}
                     </div>
                 )}
@@ -82,7 +82,8 @@ const SearchPage = () => {
                 }
                 .movie-grid {
                     display: grid;
-                    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+                    grid-template-columns: repeat(auto-fill, 240px);
+                    justify-content: center;
                     gap: 30px;
                 }
                 .no-results {

@@ -1,8 +1,9 @@
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Search, LogOut, PlayCircle } from 'lucide-react';
+import { Search, LogOut, PlayCircle, Plus } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useState, useEffect, useRef } from 'react';
+import MediaFormModal from './MediaFormModal';
 
 const Navbar = () => {
   const navigate = useNavigate();
@@ -10,6 +11,7 @@ const Navbar = () => {
   const { user, logout } = useAuth();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const dropdownRef = useRef(null);
 
   // Close dropdown when clicking outside
@@ -37,8 +39,9 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="navbar glass">
-      <div className="nav-container">
+    <>
+      <nav className="navbar glass">
+        <div className="nav-container">
 
         {/* LEFT */}
         <div className="nav-left">
@@ -59,18 +62,24 @@ const Navbar = () => {
         <div className="nav-right">
 
           {/* SEARCH */}
-          <form onSubmit={handleSearch} className="search-bar glass">
-            <Search size={20} color="var(--muted)" />
-            <input 
-              type="text" 
-              placeholder="Search movies..." 
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
-            <button type="submit" className="search-btn">
-              <Search size={20} color="black" />
+          <div className="search-and-add">
+            <form onSubmit={handleSearch} className="search-bar glass">
+              <Search size={20} color="var(--muted)" />
+              <input
+                type="text"
+                placeholder="Search movies..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+              <button type="submit" className="search-btn" style={{ background: 'transparent', border: 'none', cursor: 'pointer' }}>
+                <Search size={20} color="white" />
+              </button>
+            </form>
+            <button className="add-btn glass" onClick={() => setIsAddModalOpen(true)}>
+              <Plus size={20} color="white" />
+              <span>Add</span>
             </button>
-          </form>
+          </div>
 
           {/* USER SECTION */}
           {user ? (
@@ -112,6 +121,13 @@ const Navbar = () => {
           )}
         </div>
       </div>
+    </nav>
+
+      <MediaFormModal
+        isOpen={isAddModalOpen}
+        onClose={() => setIsAddModalOpen(false)}
+        onSuccess={() => window.location.reload()}
+      />
 
       {/* STYLES */}
       <style jsx>{`
@@ -180,13 +196,18 @@ const Navbar = () => {
           align-items: center;
           gap: 20px;
         }
+        .search-and-add {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+        }
         .search-bar {
           display: flex;
           align-items: center;
           gap: 10px;
           padding: 8px 16px;
           border-radius: 99px;
-          width: 300px;
+          width: 250px;
         }
         .search-bar input {
           background: transparent;
@@ -194,6 +215,22 @@ const Navbar = () => {
           color: white;
           width: 100%;
           outline: none;
+        }
+        .add-btn {
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          padding: 8px 16px;
+          border-radius: 99px;
+          border: 1px solid rgba(255,255,255,0.1);
+          background: rgba(255,255,255,0.05);
+          color: white;
+          cursor: pointer;
+          transition: 0.3s;
+          font-weight: 600;
+        }
+        .add-btn:hover {
+          background: rgba(255,255,255,0.15);
         }
         .user-profile {
           position: relative;
@@ -249,7 +286,7 @@ const Navbar = () => {
           color: white;
         }
       `}</style>
-    </nav>
+    </>
   );
 };
 

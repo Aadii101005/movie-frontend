@@ -11,15 +11,15 @@ const ExplorePage = () => {
 
     const loading = moviesLoading || seriesLoading;
     const allContent = [
-        ...(movies?.map(m => ({...m, type: 'movie'})) || []), 
-        ...(series?.map(s => ({...s, type: 'series'})) || [])
+        ...(movies?.map(m => ({ ...m, type: 'movie' })) || []),
+        ...(series?.map(s => ({ ...s, type: 'series' })) || [])
     ].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
     return (
         <div className="explore-page hero-gradient">
             <Navbar />
-            
-            <section 
+
+            <section
                 className="page-hero"
                 style={{
                     backgroundImage: `linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.8)), url(${heroImage})`,
@@ -39,7 +39,7 @@ const ExplorePage = () => {
                 ) : (
                     <div className="movie-grid">
                         {allContent.map((item) => (
-                            <MovieCard key={`${item.type}-${item.id}`} movie={item} />
+                            <MovieCard key={`${item.type}-${item.id}`} movie={item} type={item.type} />
                         ))}
                     </div>
                 )}
@@ -77,7 +77,8 @@ const ExplorePage = () => {
                 }
                 .movie-grid {
                     display: grid;
-                    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+                    grid-template-columns: repeat(auto-fill, 240px);
+                    justify-content: center;
                     gap: 30px;
                 }
             `}</style>

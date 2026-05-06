@@ -71,7 +71,8 @@ const MoviesPage = () => {
         }
         .movie-grid {
           display: grid;
-          grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+          grid-template-columns: repeat(auto-fill, 240px);
+          justify-content: center;
           gap: 30px;
         }
       `}</style>

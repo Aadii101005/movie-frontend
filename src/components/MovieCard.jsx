@@ -1,9 +1,65 @@
+import { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Play, Star, Calendar, Clock } from 'lucide-react';
+import { Play, Star, MoreVertical, Pencil, Trash } from 'lucide-react';
+import MediaFormModal from './MediaFormModal';
 
-const MovieCard = ({ movie }) => {
+const MovieCard = ({ movie, type = 'movie' }) => {
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const menuRef = useRef(null);
+
+  // Close menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (menuRef.current && !menuRef.current.contains(e.target)) {
+        setIsMenuOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const handleDelete = async (e) => {
+    e.stopPropagation();
+    e.preventDefault();
+    setIsMenuOpen(false);
+    if (!window.confirm(`Are you sure you want to delete ${movie.title}?`)) return;
+
+    setIsDeleting(true);
+    const endpoint = type === 'movie' ? '/protected/movies' : '/protected/series';
+    try {
+      const response = await fetch(`http://localhost:5000/api${endpoint}/${movie.id}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}` // if applicable
+        }
+      });
+      if (response.ok) {
+        window.location.reload();
+      }
+    } catch (error) {
+      console.error('Failed to delete', error);
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
+  const handleEdit = (e) => {
+    e.stopPropagation();
+    e.preventDefault();
+    setIsMenuOpen(false);
+    setIsEditModalOpen(true);
+  };
+
+  const toggleMenu = (e) => {
+    e.stopPropagation();
+    e.preventDefault();
+    setIsMenuOpen(!isMenuOpen);
+  };
+
   return (
-    <motion.div 
+    <motion.div
       initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
       whileHover={{ y: -10 }}
@@ -11,9 +67,27 @@ const MovieCard = ({ movie }) => {
       className="movie-card glass"
     >
       <div className="image-container">
-        <img src={movie.poster || `https://image.tmdb.org/t/p/w500/${movie.poster_path}`} alt={movie.title} />
+        <img src={movie.poster || movie.poster_path ? (movie.poster?.startsWith('http') ? movie.poster : `https://image.tmdb.org/t/p/w500/${movie.poster_path || movie.poster}`) : 'https://via.placeholder.com/500x750?text=No+Image'} alt={movie.title} />
+
+        {movie.id && (
+          <div className="menu-container" ref={menuRef}>
+            <button onClick={toggleMenu} className="three-dots-btn" title="Options">
+              <MoreVertical size={20} />
+            </button>
+            {isMenuOpen && (
+              <div className="dropdown-menu">
+                <button onClick={handleEdit} className="dropdown-item">
+                  <Pencil size={14} /> Edit
+                </button>
+                <button onClick={handleDelete} disabled={isDeleting} className="dropdown-item delete-item">
+                  <Trash size={14} /> Delete
+                </button>
+              </div>
+            )}
+          </div>
+        )}
         <div className="overlay">
-          <motion.button 
+          <motion.button
             whileHover={{ scale: 1.1 }}
             className="play-btn"
           >
@@ -21,7 +95,7 @@ const MovieCard = ({ movie }) => {
           </motion.button>
         </div>
       </div>
-      
+
       <div className="card-info">
         <div className="top-row">
           <span className="year">{movie.year || movie.release_date?.split('-')[0]}</span>
@@ -117,7 +191,75 @@ const MovieCard = ({ movie }) => {
           overflow: hidden;
           line-height: 1.4;
         }
+        .menu-container {
+          position: absolute;
+          top: 10px;
+          right: 10px;
+          z-index: 20;
+        }
+        .three-dots-btn {
+          width: 32px;
+          height: 32px;
+          border-radius: 50%;
+          border: none;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+          color: black; /* Black dots */
+          background: rgba(255, 255, 255, 0.9); /* White background */
+          box-shadow: 0 2px 8px rgba(0,0,0,0.6);
+          transition: 0.3s;
+        }
+        .three-dots-btn:hover {
+          transform: scale(1.1);
+          background: white;
+        }
+        .dropdown-menu {
+          position: absolute;
+          top: 40px;
+          right: 0;
+          background: var(--card, #1a1a1a);
+          border: 1px solid rgba(255,255,255,0.1);
+          border-radius: 8px;
+          padding: 8px;
+          display: flex;
+          flex-direction: column;
+          gap: 4px;
+          box-shadow: 0 10px 25px rgba(0,0,0,0.8);
+          min-width: 120px;
+        }
+        .dropdown-item {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          width: 100%;
+          padding: 8px 12px;
+          border: none;
+          background: transparent;
+          color: white;
+          cursor: pointer;
+          font-size: 14px;
+          border-radius: 4px;
+          transition: 0.2s;
+        }
+        .dropdown-item:hover {
+          background: rgba(255,255,255,0.1);
+        }
+        .delete-item:hover {
+          background: rgba(239, 68, 68, 0.2);
+          color: #ef4444;
+        }
       `}</style>
+
+      {isEditModalOpen && (
+        <MediaFormModal
+          isOpen={isEditModalOpen}
+          onClose={() => setIsEditModalOpen(false)}
+          initialData={{ ...movie, type }}
+          onSuccess={() => window.location.reload()}
+        />
+      )}
     </motion.div>
   );
 };

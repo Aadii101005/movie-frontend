@@ -12,7 +12,7 @@ const SeriesPage = () => {
     <div className="series-page hero-gradient">
       <Navbar />
 
-      <section 
+      <section
         className="page-hero"
         style={{
           backgroundImage: `linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.8)), url(${heroImage})`,
@@ -25,14 +25,14 @@ const SeriesPage = () => {
           </header>
         </div>
       </section>
-      
+
       <div className="container main-content">
         {loading ? (
           <Loader />
         ) : series?.length > 0 ? (
           <div className="series-grid">
             {series.map((item) => (
-              <MovieCard key={item.id} movie={item} />
+              <MovieCard key={item.id} movie={item} type="series" />
             ))}
           </div>
         ) : (
@@ -75,7 +75,8 @@ const SeriesPage = () => {
         }
         .series-grid {
           display: grid;
-          grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+          grid-template-columns: repeat(auto-fill, 240px);
+          justify-content: center;
           gap: 30px;
         }
         .empty-state {
