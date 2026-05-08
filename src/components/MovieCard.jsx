@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Play, Star, MoreVertical, Pencil, Trash } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import MediaFormModal from './MediaFormModal';
 
 const MovieCard = ({ movie, type = 'movie' }) => {
@@ -8,6 +9,7 @@ const MovieCard = ({ movie, type = 'movie' }) => {
   const [isDeleting, setIsDeleting] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const menuRef = useRef(null);
+  const navigate = useNavigate();
 
   // Close menu when clicking outside
   useEffect(() => {
@@ -58,6 +60,12 @@ const MovieCard = ({ movie, type = 'movie' }) => {
     setIsMenuOpen(!isMenuOpen);
   };
 
+  const handleCardClick = () => {
+    if (!isMenuOpen) {
+      navigate(`/${type === 'movie' ? 'movies' : 'series'}/${movie.id}`);
+    }
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -65,6 +73,7 @@ const MovieCard = ({ movie, type = 'movie' }) => {
       whileHover={{ y: -10 }}
       viewport={{ once: true }}
       className="movie-card glass"
+      onClick={handleCardClick}
     >
       <div className="image-container">
         <img src={movie.poster || movie.poster_path ? (movie.poster?.startsWith('http') ? movie.poster : `https://image.tmdb.org/t/p/w500/${movie.poster_path || movie.poster}`) : 'https://via.placeholder.com/500x750?text=No+Image'} alt={movie.title} />
